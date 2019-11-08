@@ -16,6 +16,11 @@ using Aop.Api.Util;
 using System.Threading.Tasks;
 using QRCoder;
 using System.Drawing;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.HSSF.Util;
+using NPOI.HSSF.UserModel;
 
 namespace mmDemo.Controllers
 {
@@ -405,6 +410,7 @@ namespace mmDemo.Controllers
             return Json(new { code = 0, data = t, jq }, JsonRequestBehavior.AllowGet);
         }
 
+        //上传excel 表格
         public int Fileup()
         {
             var file = Request.Files[0];
@@ -455,5 +461,176 @@ namespace mmDemo.Controllers
             string base64String = Convert.ToBase64String(bytes);
             return base64String;
        }
+
+        public void excel(string fileName)
+        {
+            //var newFile = @"newbook.core.xlsx";
+            var newFile = fileName;
+            string path = "/File/" + fileName;
+            string filePath = Server.MapPath(path);
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                
+                IWorkbook workbook = new HSSFWorkbook();
+
+                IFont font = workbook.CreateFont();//字体颜色
+                font.Color = HSSFColor.Black.Index;
+                font.FontHeight = 500;
+
+                ISheet sheet1 = workbook.CreateSheet("Sheet1");
+                //设置样式(坑：要把先显示的放在前面不然是看不到的)
+                
+                ICellStyle cellstyle = workbook.CreateCellStyle();
+                cellstyle.VerticalAlignment = VerticalAlignment.Center; //内容居中
+                cellstyle.Alignment = HorizontalAlignment.Center;
+                cellstyle.FillBackgroundColor = HSSFColor.Red.Index;
+                cellstyle.FillPattern = FillPattern.FineDots;
+                cellstyle.SetFont(font);
+
+                //大坑：合并后行数还是按照原来的算  
+                sheet1.AddMergedRegion(new CellRangeAddress(0, 1, 0, 4));    
+                IRow row = sheet1.CreateRow(0);
+                row.Height = 60 * 10;
+                ICell cell00 = row.CreateCell(0);
+                cell00.SetCellValue("欢迎进入欢乐谷");
+                //sheet1.AutoSizeColumn(1);              
+                cell00.CellStyle = cellstyle;
+
+                IRow row2 = sheet1.CreateRow(2);
+                row2.Height = 40 * 10;
+                //定义一个数组；
+                string[] rowName = new string[] { "姓名", "性别", "年龄", "电话号码" };
+                //合并单元格
+                //sheet1.AddMergedRegion(new CellRangeAddress(2, 2, 3, 4));
+                for (int j=0;j<10;j++)
+                {
+                    sheet1.AddMergedRegion(new CellRangeAddress(2+j, 2+j, 3, 4));
+                }
+                //定一个格式
+                IFont font2 = workbook.CreateFont();//字体颜色
+                font2.Color = HSSFColor.Black.Index;
+                font2.FontHeight = 200;
+                ICellStyle cellstyle2 = workbook.CreateCellStyle();
+                cellstyle2.VerticalAlignment = VerticalAlignment.Center; //内容居中
+                cellstyle2.Alignment = HorizontalAlignment.Center;                
+                cellstyle2.FillBackgroundColor = HSSFColor.Yellow.Index2;
+                cellstyle2.FillPattern = FillPattern.FineDots;
+                cellstyle2.SetFont(font2);
+                for (int i = 0; i < 4; i++)
+                {
+                    ICell celly = row2.CreateCell(i);
+                    celly.SetCellValue(rowName[i]);
+                    celly.CellStyle = cellstyle2;
+                }
+                //设置输入数字
+                var cellRegions = new CellRangeAddressList(3, 11, 2, 2);
+                DVConstraint constraint = DVConstraint.CreateNumericConstraint(
+                ValidationType.INTEGER, OperatorType.BETWEEN, "0", "100");
+
+                HSSFDataValidation dataValidate = new HSSFDataValidation(cellRegions, constraint);
+                dataValidate.CreateErrorBox("输入不合法", "请输入1~100的数字。");
+                //dataValidate.PromptBoxTitle = "ErrorInput";
+
+                sheet1.AddValidationData(dataValidate);
+
+
+
+
+
+                var sheet2 = workbook.CreateSheet("Sheet2");
+                var style1 = workbook.CreateCellStyle();
+                style1.FillForegroundColor = HSSFColor.Red.Index;
+                style1.FillPattern = FillPattern.SolidForeground;
+                style1.VerticalAlignment = VerticalAlignment.Center; //内容居中
+                style1.Alignment = HorizontalAlignment.Center;
+                style1.SetFont(font);
+
+                var style2 = workbook.CreateCellStyle();
+                style2.FillForegroundColor = HSSFColor.Yellow.Index2;
+                style2.FillPattern = FillPattern.SolidForeground;
+
+                sheet2.AddMergedRegion(new CellRangeAddress(0, 1, 0, 4));
+                var cell2 = sheet2.CreateRow(0).CreateCell(0);
+                sheet2.GetRow(0).Height=600;
+                cell2.SetCellValue("欢迎进入欢乐谷");
+                cell2.CellStyle = style1;
+                
+                for (int j = 0; j < 10; j++)
+                {
+                    sheet2.AddMergedRegion(new CellRangeAddress(2 + j, 2 + j, 3, 4));
+                }
+                //for (int i = 0; i < 4; i++)
+                //{
+                //    var c = sheet2.CreateRow(2).CreateCell(i);
+                //    c.SetCellValue(rowName[i]);
+                //    c.CellStyle = style2;
+                //}
+
+                cell2 = sheet2.CreateRow(2).CreateCell(0);
+                cell2.CellStyle = style2;
+                cell2.SetCellValue(rowName[0]);
+              
+
+
+
+                workbook.Write(fs);
+                fs.Close();
+            }
+        }
+        public void tule(string fileName)
+        {
+            //var newFile = @"newbook.core.xlsx";
+            var newFile = fileName;
+            string path = "/File/" + fileName;
+            string filePath = Server.MapPath(path);
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new HSSFWorkbook();
+                //定义一个数组；
+                string[] rowName = new string[] { "姓名", "性别", "年龄", "电话号码" };
+
+                IFont font = workbook.CreateFont();//字体颜色
+                font.Color = HSSFColor.Black.Index;
+                font.FontHeight = 500;
+
+                var sheet1 = workbook.CreateSheet("吐了");
+                var style = workbook.CreateCellStyle();
+                style.FillForegroundColor = HSSFColor.Red.Index;
+                style.FillPattern = FillPattern.SolidForeground;
+                style.VerticalAlignment = VerticalAlignment.Center; //内容居中
+                style.Alignment = HorizontalAlignment.Center;
+                style.SetFont(font);
+
+                sheet1.AddMergedRegion(new CellRangeAddress(0, 1, 0, 4));
+                var cell00 = sheet1.CreateRow(0).CreateCell(0);
+                sheet1.GetRow(0).Height = 600;
+                cell00.SetCellValue("欢迎进入欢乐谷");
+                cell00.CellStyle = style;
+
+                var row2 = sheet1.CreateRow(2);
+                for (int i = 0; i < 4; i++)
+                {
+                    row2.CreateCell(i).SetCellValue(rowName[i]);
+                }
+                for (int j = 0; j < 10; j++)
+                {
+                    sheet1.AddMergedRegion(new CellRangeAddress(2 + j, 2 + j, 3, 4));
+                }
+                //设置输入数字
+                var cellRegions = new CellRangeAddressList(3, 11, 2, 2);
+                DVConstraint constraint = DVConstraint.CreateNumericConstraint(
+                ValidationType.INTEGER, OperatorType.BETWEEN, "0", "100");
+
+                HSSFDataValidation dataValidate = new HSSFDataValidation(cellRegions, constraint);
+                dataValidate.CreateErrorBox("输入不合法", "请输入1~100的数字。");
+                //dataValidate.PromptBoxTitle = "ErrorInput";
+                sheet1.AddValidationData(dataValidate);
+
+                workbook.Write(fs);
+                fs.Close();
+            }
+        }
+
+
     }
 }

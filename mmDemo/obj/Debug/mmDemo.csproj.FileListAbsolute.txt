@@ -70,3 +70,9 @@ D:\vsWorkSpace\mmDemo\mmDemo\bin\EntityFramework.SqlServer.dll
 D:\vsWorkSpace\mmDemo\mmDemo\bin\EntityFramework.xml
 D:\vsWorkSpace\mmDemo\mmDemo\bin\EntityFramework.SqlServer.xml
 D:\vsWorkSpace\mmDemo\mmDemo\bin\QRCoder.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\ICSharpCode.SharpZipLib.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\NPOI.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\NPOI.OOXML.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\NPOI.OpenXml4Net.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\NPOI.OpenXmlFormats.dll
+D:\vsWorkSpace\mmDemo\mmDemo\bin\ICSharpCode.SharpZipLib.xml
